@@ -61,3 +61,18 @@ export async function deleteReservation(req, res) {
     res.status(500).json({ error: err });
   }
 }
+
+export async function getReservations(req, res) {
+  try {
+    const user = await User.findById(req.params.idUser);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const reservations = await Reservation.findAll({ userId: user._id });
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
