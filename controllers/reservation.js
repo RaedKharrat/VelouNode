@@ -39,7 +39,7 @@ export async function commandeVelo(req, res) {
       }
 
     } else {
-      res.status(200).json({ message: "Velo non Disponible! choose another one !" });
+      res.status(200).json({ message: "bike non available! choose another one !" });
     }
   } catch (err) {
     res.status(500).json({ error: err });
