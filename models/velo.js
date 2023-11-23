@@ -10,6 +10,8 @@ const veloSchema = new Schema({
   },
   image: {
     type: String,
+    required: false,
+
   },
   prix: {
     type: Number,
@@ -28,7 +30,7 @@ const veloSchema = new Schema({
     required: true,
   },  
   cordinatee: {
-    type: String,
+    type: String, 
     required: true,
   }
  

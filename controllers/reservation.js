@@ -11,38 +11,38 @@ export async function commandeVelo(req, res) {
   try {
     const velo = await Velo.findById(req.params.idVelo);
 
-    if (velo.disponibilite === true) {
+    if (velo.disponible === true) {
       const user = await User.findById(req.params.idUser);
 
       const reservation = await Reservation.create({
         idUser: req.params.idUser,
         idVelo: req.params.idVelo,
-        etat: true
+        dateReservation: req.body.dateReservation,
+        typePayment:req.body.typePayment,
+        etat: true,
+
       });
 
       if (reservation.codePromo && reservation.codePromo !== '') {
-        const doc1 = await Velo.findByIdAndUpdate(req.params.idUser, {
-          prixTotal: (velo.prixTotal * 90) / 100,
+        const updatedPrice = (velo.prixTotal * 75) / 100;
+        await Velo.findByIdAndUpdate(req.params.idVelo, {
+          prixTotal: updatedPrice,
         });
-      } else {
-        // Call the createCheckoutSession function and get the session object
+      }
+       
+      else {
         const session = await createCheckoutSession();
 
-        // You can now use the 'session' object as needed, for example, you might want to store the session ID in the reservation
         reservation.stripeCheckoutSessionId = session.id;
-        
-        // Save the updated reservation with the Stripe Checkout Session ID
         await reservation.save();
 
-        // Respond with the session ID or any other relevant information
         res.status(200).json({ message: "Payment session created", sessionId: session.id });
       }
-
     } else {
-      res.status(200).json({ message: "bike non available! choose another one !" });
+      res.status(200).json({ message: "Bike not available! Choose another one!" });
     }
   } catch (err) {
-    res.status(500).json({ error: err });
+    res.status(500).json({ error: err.message });
   }
 }
 

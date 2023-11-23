@@ -1,27 +1,49 @@
-// stripe.js
-
 import stripePackage from 'stripe';
-import velo from '../models/velo.js';
+import Velo from '../models/velo.js';
 
-const stripe = stripePackage('pk_test_51OCrioL5tL8k5Xpx1oqocFMpIrM3p7sMKIb2GyOdk3H4R54fMKWsMkpg9DSjFzHqutAdYafEdxGbK6sfCXZsEgea006Vuc77WL');
+const stripe = stripePackage('sk_test_51OCrioL5tL8k5XpxbNvuiKIYFrlgpnZwDX2niV0TZxvXy435ZIfAa44TA3g4FNx6YkwKn6gJRqYffiruYWJKbq7500Vk49cjlY');
 
-export function createCheckoutSession(productDetails) {
-  return stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: velo.description,
+export async function createCheckoutSession(productDetails) {
+  try {
+    // Retrieve the necessary data from the database (e.g., Velo object)
+    // const velo = await Velo.findById(productDetails.veloId);
+
+    // Create the Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: "velo jdida",
+            },
+            unit_amount: 100,
           },
-          unit_amount: velo.prixTotal,
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    mode: 'payment',
-    success_url: productDetails.successUrl || 'https://your-website.com/success',
-    cancel_url: productDetails.cancelUrl || 'https://your-website.com/cancel',
-  });
+      ],
+      mode: 'payment',
+      success_url: 'https://your-website.com/success',
+      cancel_url:  'https://your-website.com/cancel',
+    });
+
+    return session;
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    throw error;
+  }
+
+async function createNewCard(customerId, cardToken) {
+  try {
+    const card = await stripe.customers.createSource(customerId, {
+      source: cardToken,
+    });
+
+    return card;
+  } catch (error) {
+    console.error('Error creating card:', error);
+    throw error;
+  }
+}
 }

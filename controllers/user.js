@@ -4,43 +4,33 @@ import { validationResult } from 'express-validator';
 
 
 
-// TODOO 1 Permet d'ajouter un nouveau user
+// TODOO 1 Permet d'ajouter un nouveau 0user
 
 export  function adduser(req, res) {
+  const {  adresse,email,first_name,last_name,phone,password,wallet} = req.body
+
  console.log(validationResult(req));
+
   if (!validationResult(req).isEmpty()){  // verifiw les condition mte3na 
     res.status(400).json({errors: validationResult(req).array()})
 }else{
    user.create(
     {
-      adresse:req.body.adresse,
-      email: req.body.email,    
-      first_name: req.body.first_name,  
-      last_name: req.body.last_name,
-      phone: req.body.phone,
-      password: req.body.password,
-      image : `${req.protocol}://${req.get("host")}/image/${req.file.filename}`,
-      wallet: req.body.wallet
+      adresse: adresse,
+      email: email,    
+      first_name: first_name,  
+      last_name: last_name,
+      phone: phone,
+      password: password,
+
+      //image : req.protocol + "://"+ req.get("host") + "/image/" + req.file.filename,
+
+
+      wallet: wallet
     }
-)
-
-
-  .then((newuser) => {
-    res.status(200).json(newuser)({
-        email: newuser.username, 
-        first_name: newuser.first_name,  
-        last_name: newuser.last_name,
-        phone: newuser.phone,
-        password: newuser.password,
-        image : `${req.protocol}://${req.get("host")}/image/${req.file.filename}`,
-        wallet: newuser.wallet,
-        adresse: newuser.adresse,
-    })
-})
     
-    .catch(error => res.status(400).json({ error }));
-
-
+)
+return res.status(200).json({message: "sucess"})
 
 }
 }
@@ -97,7 +87,7 @@ export function updateuser(req, res) {
       phone: req.body.phone,    
       first_name: req.body.first_name,  
       password:  req.body.password,
-      image :`${req.protocol}://${req.get("host")}/image/${req.file.filename}`,
+     // image :`${req.protocol}://${req.get("host")}/image/${req.file.filename}`,
     }, {new: true})
     .then((updatedUser)=> {
       if (updatedUser) {

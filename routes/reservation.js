@@ -4,10 +4,8 @@ import { commandeVelo, getReservations, deleteReservation } from '../controllers
 
 const router = express.Router();
 
-router
-  .route('/reservation/:idUser/:idGame')
-  .post(commandeVelo);
 
+router.post('/reservation/:idUser/:idVelo', commandeVelo)
 router.delete('/reservation/:_id', deleteReservation);
 router.get("/reservations/:idUsder", getReservations);
 
