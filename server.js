@@ -8,6 +8,8 @@ import userRoutes from './routes/user.js'
 import adminRoutes from './routes/admin.js'
 import veloRoutes from './routes/velo.js'
 import reservationRoutes from './routes/reservation.js'
+import reclamationRoutes from './routes/reclamation.js';
+
 
 
 const app = express()
@@ -38,6 +40,7 @@ mongoose
 app.use('/user', userRoutes)
 app.use('/admin', adminRoutes)
 app.use('/velo', veloRoutes)
+app.use('/reclamations', reclamationRoutes);
 app.use('/reservation', reservationRoutes)
 
 app.use(notFoundError)

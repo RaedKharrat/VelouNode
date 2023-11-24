@@ -6,8 +6,7 @@ const router = express.Router();
 
 
 router.post('/reservation/:idUser/:idVelo', commandeVelo)
-router.delete('/reservation/:_id', deleteReservation);
-router.get("/reservations/:idUsder", getReservations);
-
+router.delete('/reservation/:id', deleteReservation);
+router.get("/reservations/:idUser", getReservations);
 
 export default router;

@@ -2,6 +2,8 @@ import User from "../models/user.js";
 import Reservation from "../models/reservation.js";
 import Velo from "../models/velo.js";
 import { createCheckoutSession } from "../services/stripe.js";
+import mongoose from 'mongoose';
+
 
 
 
@@ -45,32 +47,39 @@ export async function commandeVelo(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
-
 export async function deleteReservation(req, res) {
   try {
-    const reservationId = req.params.id;
+    const { id } = req.params; // Destructure the 'id' property from req.params
 
-    const deletedReservation = await Reservation.findByIdAndDelete(reservationId);
+    console.log('Reservation ID:', id); // Log the extracted ID value
 
-    if (!deletedReservation) {
-      return res.status(404).json({ message: 'Reservation not found' });
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid reservation ID' });
     }
 
-    res.status(200).json({ message: 'Reservation deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err });
+    const deletedReservation = await Reservation.findByIdAndDelete(id);
+
+    if (deletedReservation) {
+      return res.status(200).json({ success: { msg: 'Reservation deleted successfully', deletedReservation } });
+    } else {
+      return res.status(404).json({ errors: { message: 'Failed to delete reservation' } });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
 
 export async function getReservations(req, res) {
   try {
-    const user = await User.findById(req.params.idUser);
+    const userId = req.params.idUser;
+
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const reservations = await Reservation.findAll({ userId: user._id });
+    const reservations = await Reservation.find({ userId: userId });
     res.status(200).json(reservations);
   } catch (error) {
     res.status(400).json({ error: error.message });
