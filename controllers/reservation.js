@@ -2,11 +2,97 @@ import User from "../models/user.js";
 import Reservation from "../models/reservation.js";
 import Velo from "../models/velo.js";
 import { createCheckoutSession } from "../services/stripe.js";
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+
+
+
+export async function totalReservation(_req, res) {
+  try {
+    const totalReservations = await Reservation.countDocuments();
+    res.status(200).json({ totalReservations });
+  } catch (error) {
+    console.error('Error fetching total reservations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 
 
 
+export async function getTotalReservations(_req, res) {
+  try {
+    // Use Mongoose to find all reservations
+    const allReservations = await Reservation.find();
+
+    // Log the reservations for debugging
+    console.log('All Reservations:', allReservations);
+
+    // Serialize each document in the array
+    const serializedReservations = allReservations.map(reservation => reservation.toJSON());
+
+    // Send the response with explicit serialization
+    res.status(200).json({ allReservations: serializedReservations });
+  } catch (error) {
+    console.error('Error fetching all reservations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+
+export async function loadedReservation(_req, res) {
+  try {
+    const currentDate = new Date();
+
+    // Find reservations where dateReservation is less than the current date
+    const loadedReservations = await Reservation.countDocuments({
+      dateReservation: { $lt: currentDate },
+    });
+
+    res.status(200).json({ loadedReservations });
+  } catch (error) {
+    console.error('Error fetching loaded reservations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export async function FinishedReservation(_req, res) {
+  try {
+    const currentDate = new Date();
+
+    // Find reservations where dateReservation is greater than the current date
+    const finishedReservations = await Reservation.countDocuments({
+      dateReservation: { $gt: currentDate },
+    });
+
+    res.status(200).json({ finishedReservations });
+  } catch (error) {
+    console.error('Error fetching finished reservations:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export async function totalTransaction(_req, res) {
+  try {
+    // Use Mongoose aggregate pipeline to calculate the sum of prixTotal
+    const totalTransaction = await Velo.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$prixTotal" }
+        }
+      }
+    ]);
+
+    // Extract the totalTransaction value from the result
+    const result = totalTransaction.length > 0 ? totalTransaction[0].total : 0;
+
+    res.status(200).json({ totalTransaction: result });
+  } catch (error) {
+    console.error('Error calculating total transaction:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 
 export async function commandeVelo(req, res) {
@@ -69,7 +155,7 @@ export async function deleteReservation(req, res) {
   }
 }
 
-export async function getReservations(req, res) {
+export async function getReservationsU(req, res) {
   try {
     const userId = req.params.idUser;
 
@@ -79,7 +165,9 @@ export async function getReservations(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const reservations = await Reservation.find({ userId: userId });
+    // Modify the query to use the correct field name for user ID
+    const reservations = await Reservation.find({ idUser: userId });
+
     res.status(200).json(reservations);
   } catch (error) {
     res.status(400).json({ error: error.message });
