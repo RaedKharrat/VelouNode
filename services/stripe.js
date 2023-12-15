@@ -1,13 +1,14 @@
 import stripePackage from 'stripe';
-import Velo from '../models/velo.js';
 
-const stripe = stripePackage('sk_test_51OCrioL5tL8k5XpxbNvuiKIYFrlgpnZwDX2niV0TZxvXy435ZIfAa44TA3g4FNx6YkwKn6gJRqYffiruYWJKbq7500Vk49cjlY');
+const stripeSecretKey = 'sk_test_51OCrioL5tL8k5XpxbNvuiKIYFrlgpnZwDX2niV0TZxvXy435ZIfAa44TA3g4FNx6YkwKn6gJRqYffiruYWJKbq7500Vk49cjlY';
 
-export async function createCheckoutSession(productDetails) {
+const stripe = stripePackage(stripeSecretKey);
+
+// Define a constant for the base URL
+const baseUrl = 'http://192.168.1.12:27017/reservation/reservation/655e87de5c69918a939e20f9/655d1d936d213ea3741af704';
+
+export async function createCheckoutSession(velo, paymentType) {
   try {
-    // Retrieve the necessary data from the database (e.g., Velo object)
-    // const velo = await Velo.findById(productDetails.veloId);
-
     // Create the Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -16,16 +17,16 @@ export async function createCheckoutSession(productDetails) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: "velo jdida",
+              name: "New bike",
             },
-            unit_amount: 100,
+            unit_amount: velo.prixTotal,
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: 'https://your-website.com/success',
-      cancel_url:  'https://your-website.com/cancel',
+      success_url: `${baseUrl}/success`,
+      cancel_url: `${baseUrl}/cancel`,
     });
 
     return session;
@@ -33,17 +34,4 @@ export async function createCheckoutSession(productDetails) {
     console.error('Error creating checkout session:', error);
     throw error;
   }
-
-async function createNewCard(customerId, cardToken) {
-  try {
-    const card = await stripe.customers.createSource(customerId, {
-      source: cardToken,
-    });
-
-    return card;
-  } catch (error) {
-    console.error('Error creating card:', error);
-    throw error;
-  }
-}
 }

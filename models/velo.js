@@ -4,35 +4,36 @@ const { Schema, model } = mongoose;
 
 const veloSchema = new Schema({
   // Define the schema fields for the "velos" table
+  image: {
+    type: String,
+    required: true,
+  },
   type: {
     type: String,
     required: true,
   },
-  image: {
-    type: String,
-    required: false,
-
-  },
   prix: {
     type: Number,
+    required: true,
   },
   description: {
     type: String,
     required: true,
   },
   disponible: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: true
   },
-  prixTotal: {
-    type: Number,
-    required: true,
-  },  
-  cordinatee: {
+
+  longitude: {
     type: String, 
-    required: true,
+    required: false,
+  },
+  latitude: {
+    type: String, 
+    required: false,
   }
+
  
 },
 {timestamps: true});

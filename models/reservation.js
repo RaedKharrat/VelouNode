@@ -1,7 +1,6 @@
-// models/reservation.js
-
 import mongoose from 'mongoose';
 import { createCheckoutSession } from "../services/stripe.js";
+
 const { Schema, model } = mongoose;
 
 const ReservationSchema = new Schema(
@@ -15,6 +14,7 @@ const ReservationSchema = new Schema(
       enum: ['pay Later', 'Credit Card'],
       required: true
     },
+    
     etat: {
       type: Boolean,
       default: false,
@@ -34,7 +34,7 @@ const ReservationSchema = new Schema(
       default: generatePromoCode
     },
     stripeCheckoutSessionId: {
-      type: String, 
+      type: String,
       required: false
     }
   },

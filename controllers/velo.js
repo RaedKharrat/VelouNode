@@ -1,34 +1,52 @@
 import Velo from "../models/velo.js";
+import { validationResult } from "express-validator";
 
 // Add a new product
 export const createvelo = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { type, prix, description, disponible, longitude, latitude } = req.body;
+
+  // Check if the file is included in the request
+  let image;
+  if (req.file) {
+      image = req.file.path;
+  } else {
+      // Handle the case where the file is not included
+      // You can either set a default image or return an error
+      // For example, setting a default image path or returning an error:
+      // return res.status(400).json({ error: 'File not provided' });
+      image = 'defaultImagePath'; // Set this to your default image path
+  }
+
   try {
-    const {
-      type,
+    Velo.create({
       image,
+      type,
       prix,
       description,
       disponible,
-      prixTotal,
-      cordinatee,
-    } = req.body;
-
-    const newVelo = new Velo({
-      type,
-      image,
-      prix,
-      description,
-      disponible,
-      prixTotal,
-      cordinatee,
+      longitude,
+      latitude,
+    })
+    .then(newVelo => {
+      res.status(201).json(newVelo);
+    })
+    .catch(err => {
+      console.error("Erreur lors de la création de velo:", err);
+      res.status(500).json({ error: err.message });
     });
-
-    const createdVelo = await newVelo.save();
-    res.status(200).json(createdVelo);
   } catch (error) {
-    res.status(400).json({ errors: error.message });
+    console.error("Erreur lors de la création de velo:", error);
+    res.status(500).json({ error: error.message });
   }
 };
+
+
+  
 
 // Get a product by its ID
 export async function getvelo(req, res) {

@@ -1,4 +1,5 @@
 import express from "express";
+import upload from "../middlewares/multer-config.js"
 
 import {
   createvelo,
@@ -11,7 +12,7 @@ import {
 const router = express.Router();
 
 // Routes for "Produits" resource
-router.post("/velos", createvelo);
+router.post("/velos", upload, createvelo);
 router.get("/veloss", getvelos);
 router.put("/velos/:id", getvelo);
 router.delete("/velos/:id", updatevelo);
