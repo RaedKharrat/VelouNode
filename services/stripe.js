@@ -1,13 +1,16 @@
 import stripePackage from 'stripe';
 
+// Define your Stripe secret key
 const stripeSecretKey = 'sk_test_51OCrioL5tL8k5XpxbNvuiKIYFrlgpnZwDX2niV0TZxvXy435ZIfAa44TA3g4FNx6YkwKn6gJRqYffiruYWJKbq7500Vk49cjlY';
 
+// Create a new instance of the Stripe package with your secret key
 const stripe = stripePackage(stripeSecretKey);
 
 // Define a constant for the base URL
-const baseUrl = 'http://192.168.1.12:27017/reservation/reservation/655e87de5c69918a939e20f9/655d1d936d213ea3741af704';
+const baseUrl = 'http://172.16.9.211:27017/reservation/reservation/655e87de5c69918a939e20f9/655d1d936d213ea3741af704';
 
-export async function createCheckoutSession(velo, paymentType) {
+// Create the checkout session
+export async function createCheckoutSession() {
   try {
     // Create the Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -17,9 +20,9 @@ export async function createCheckoutSession(velo, paymentType) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: "New bike",
+              name: 'New bike',
             },
-            unit_amount: velo.prixTotal,
+            unit_amount: 55,
           },
           quantity: 1,
         },
