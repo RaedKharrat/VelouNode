@@ -1,9 +1,13 @@
 import User from "../models/user.js";
 import Reservation from "../models/reservation.js";
 import Velo from "../models/velo.js";
+import stripePackage from 'stripe';
 import { createCheckoutSession } from "../services/stripe.js";
-// import mongoose from 'mongoose';
 import nodemailer from 'nodemailer';
+const stripeSecretKey = 'sk_test_51OCrioL5tL8k5XpxbNvuiKIYFrlgpnZwDX2niV0TZxvXy435ZIfAa44TA3g4FNx6YkwKn6gJRqYffiruYWJKbq7500Vk49cjlY';
+
+const stripe = stripePackage(stripeSecretKey);
+
 
 // controllers/reservation.js
 // ... (other imports)
@@ -253,3 +257,84 @@ export async function getReservationsU(req, res) {
     res.status(400).json({ error: error.message });
   }
 }
+
+
+
+export async function getTransactionsByDate(req, res) {
+  try {
+    // Extract startDate and endDate from query parameters
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    // Log received dates for debugging
+    console.log('Received startDate:', startDate);
+    console.log('Received endDate:', endDate);
+
+    // Check if startDate and endDate are provided
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Both startDate and endDate are required in the format YYYY-MM-DD' });
+    }
+
+    // Convert the date range to UNIX timestamps
+    const startTimestamp = Math.floor(new Date(startDate).getTime() / 1000);
+    const endTimestamp = Math.floor(new Date(endDate).getTime() / 1000);
+
+    // Log converted timestamps for debugging
+    console.log('Converted startTimestamp:', startTimestamp);
+    console.log('Converted endTimestamp:', endTimestamp);
+
+    // Retrieve all payments within the date range
+    const payments = await stripe.paymentIntents.list({
+      created: {
+        gte: startTimestamp,
+        lte: endTimestamp,
+      },
+    });
+
+    // Log payments for debugging
+    console.log('Payments:', payments);
+
+    return res.status(200).json({ data: payments.data });
+  } catch (error) {
+    console.error('Error retrieving transactions by date:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+export async function getReservationsByDay(req, res) {
+  try {
+    // Group reservations by day and count them
+    const reservations = await Reservation.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: '$dateReservation' },
+            month: { $month: '$dateReservation' },
+            day: { $dayOfMonth: '$dateReservation' },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: {
+            $dateFromParts: {
+              year: '$_id.year',
+              month: '$_id.month',
+              day: '$_id.day',
+            },
+          },
+          count: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({ data: reservations });
+  } catch (error) {
+    console.error('Error retrieving reservations by day:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+

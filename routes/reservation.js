@@ -1,5 +1,6 @@
 // routes/reservation.js
 import express from 'express';
+import stripePackage from 'stripe';
 import { 
   commandeVelo, 
   getReservationsU, 
@@ -9,7 +10,9 @@ import {
   FinishedReservation,
   totalTransaction,
   getTotalReservations,
-  sendPromoCodeByEmail 
+  sendPromoCodeByEmail ,
+  getTransactionsByDate,
+  getReservationsByDay
 } from '../controllers/reservation.js';
 
 const router = express.Router();
@@ -21,6 +24,8 @@ router.get('/reservation/loadedreservation', loadedReservation);
 router.get('/reservation/finishedreservation', FinishedReservation);
 router.get('/reservation/totaltransaction', totalTransaction);
 router.get('/reservation/allreservations', getTotalReservations);
+router.get('/reservation/transactionbydate', getTransactionsByDate); // Updated path
+router.get('/reservation/reservationstat', getReservationsByDay); // Updated path
 router.delete('/reservation/:id', deleteReservation);
 router.get("/reservations/:idUser", getReservationsU);
 
