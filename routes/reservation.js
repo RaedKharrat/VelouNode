@@ -12,7 +12,8 @@ import {
   getTotalReservations,
   sendPromoCodeByEmail ,
   getTransactionsByDate,
-  getReservationsByDay
+  getReservationsByDay,
+
 } from '../controllers/reservation.js';
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.get('/reservation/totaltransaction', totalTransaction);
 router.get('/reservation/allreservations', getTotalReservations);
 router.get('/reservation/transactionbydate', getTransactionsByDate); // Updated path
 router.get('/reservation/reservationstat', getReservationsByDay); // Updated path
+
 router.delete('/reservation/:id', deleteReservation);
 router.get("/reservations/:idUser", getReservationsU);
 

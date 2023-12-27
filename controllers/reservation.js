@@ -155,7 +155,6 @@ export async function totalTransaction(_req, res) {
   }
 }
 
-
 export async function commandeVelo(req, res) {
   try {
     const velo = await Velo.findById(req.params.idVelo);
@@ -180,11 +179,8 @@ export async function commandeVelo(req, res) {
 
       if (reservation.typePayment === 'Credit Card' || reservation.typePayment === 'pay Later') {
         // Handle both payment types
-        // ...
-
-        // Example: Create a checkout session for Credit Card payments
         if (reservation.typePayment === 'Credit Card') {
-          const session = await createCheckoutSession(velo, reservation.typePayment);
+          const session = await createCheckoutSession(velo.prix); // Pass the bike price
 
           reservation.stripeCheckoutSessionId = session.id;
           await reservation.save();
@@ -215,7 +211,6 @@ export async function commandeVelo(req, res) {
     });
   }
 }
-
 
 export async function deleteReservation(req, res) {
   try {
