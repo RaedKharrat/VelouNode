@@ -170,12 +170,12 @@ export async function commandeVelo(req, res) {
         etat: true,
       });
 
-      if (reservation.codePromo && reservation.codePromo !== '') {
-        const updatedPrice = (velo.prixTotal * 75) / 100;
-        await Velo.findByIdAndUpdate(req.params.idVelo, {
-          prixTotal: updatedPrice,
-        });
-      }
+      // if (reservation.codePromo && reservation.codePromo !== '') {
+      //   const updatedPrice = (velo.prixTotal * 75) / 100;
+      //   await Velo.findByIdAndUpdate(req.params.idVelo, {
+      //     prixTotal: updatedPrice,
+      //   });
+      // }
 
       if (reservation.typePayment === 'Credit Card' || reservation.typePayment === 'pay Later') {
         // Handle both payment types

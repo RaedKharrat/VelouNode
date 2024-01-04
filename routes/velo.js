@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../middlewares/multer-config.js"
+import multerConfig from "../middlewares/multer-config.js"
 
 import {
   createvelo,
@@ -8,14 +8,18 @@ import {
   updatevelo,
   deletevelo,
 } from "../controllers/velo.js";
+import { body } from "express-validator";
 
 const router = express.Router();
 
+const upload = multerConfig('image', {fileSize: 5 * 1024 * 1024})
+
 // Routes for "Produits" resource
-router.post("/velos", upload, createvelo);
+router.post("/velos", upload,body('type'), body('description'),body('prix'),body('disponible'), createvelo);
 router.get("/veloss", getvelos);
-router.put("/velos/:id", getvelo);
-router.delete("/velos/:id", updatevelo);
-router.get("/velos/:_id",deletevelo);
+router.put("/velos/:id", updatevelo);
+router.delete("/velos/:id", deletevelo);
+router.get("/velos/:_id",getvelo);
+
 
 export default router;

@@ -22,6 +22,8 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+app.use('/img', express.static('images'))
+app.use(express.urlencoded({ extended: true }))
 
 // DB
 mongoose.set('debug', true);

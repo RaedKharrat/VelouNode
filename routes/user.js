@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import * as user   from '../controllers/user.js';
+import * as User   from '../controllers/user.js';
 
 //import multer from "../middlewares/multer-config.js";
 //import { body } from 'express-validator';
@@ -15,45 +15,32 @@ router.route("/")
     .post( adduser ),
 
 
-router.route("/:user")
-.get(user.getuser);
+// router.route("/:email")
+// .get(user.getuser);
+
+router.route("/getAllUser")
+.get(User.getAllUsers);
 
 router.route("/:id")
   // .put(multer("image"),user.updateuser)
-   .delete(user.deleteuser);
+   .delete(User.deleteuser);
 
- /*  //Handlers from controllers
+   router.route("/login")
+   .post(User.login)
+   
+   router.route("/forgetPassword")
+   .post( User.forgetPasssword )
 
-<<<<<<< Updated upstream
+   router.route("/sendOTP")
+    .post( User.sendOTP )
 
-router.post('/login', login)
-router.post('/signup', signup)
-router.post('/send-otp', sendOTP)
-=======
-   // .router.post("/user", upload, adduser);
-   //.put(multer("image"),user.updateuser)
-    router.route("/:user")
-    .get(user.getuser)
-    router.route("/:id")
-    .put(user.updateuser)
-<<<<<<< Updated upstream
-    .delete(user.deleteuser);
->>>>>> Stashed changes
+    router.route("/VerifyOTP")
+    .post( User.verifyOtp )
 
-=======
-    .delete(user.deleteuser)
->>>>>> Stashed changes
+    router.route("/resetPassword")
+    .post( adduser )
+
+   
 
 
-
-//testing protected route
-router.get("/test",auth, (req,res)=>{
-    res.json({
-        success: true,
-        message: "You are a valid Tester "
-    })
-})
-
-
-*/
     export default router;

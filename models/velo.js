@@ -34,7 +34,6 @@ const veloSchema = new Schema({
     required: false,
   }
 
- 
 },
 {timestamps: true});
 

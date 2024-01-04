@@ -2,10 +2,11 @@ import Velo from "../models/velo.js";
 import { validationResult } from "express-validator";
 
 // Add a new product
+/*
 export const createvelo = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
 
   const { type, prix, description, disponible, longitude, latitude } = req.body;
@@ -13,13 +14,11 @@ export const createvelo = async (req, res) => {
   // Check if the file is included in the request
   let image;
   if (req.file) {
-      image = req.file.path;
+     image = req.file.path;
   } else {
-      // Handle the case where the file is not included
-      // You can either set a default image or return an error
-      // For example, setting a default image path or returning an error:
-      // return res.status(400).json({ error: 'File not provided' });
-      image = 'defaultImagePath'; // Set this to your default image path
+    // Handle the case where the file is not included
+    // Set this to your default image path or consider using null
+    image = null;
   }
 
   try {
@@ -32,21 +31,45 @@ export const createvelo = async (req, res) => {
       longitude,
       latitude,
     })
-    .then(newVelo => {
-      res.status(201).json(newVelo);
-    })
-    .catch(err => {
-      console.error("Erreur lors de la création de velo:", err);
-      res.status(500).json({ error: err.message });
-    });
+      .then((newVelo) => {
+        res.status(201).json(newVelo);
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la création de velo:", err);
+        res.status(500).json({ error: err.message });
+      });
   } catch (error) {
     console.error("Erreur lors de la création de velo:", error);
     res.status(500).json({ error: error.message });
   }
-};
+};*/
 
+export async function createvelo(req, res) {
+  try {
+    if (!validationResult(req).isEmpty()) {
+      return res.status(400).json({ error: validationResult(req).array() });
+    }
 
-  
+    let newVelo = await Velo.create({
+      type: req.body.type,
+      image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+      description: req.body.description,
+      prix: req.body.prix,
+      disponible: req.body.disponible,
+    });
+    
+
+    res.status(200).json({
+      title: newVelo.type,
+      image: newVelo.image,
+      description: newVelo.description,
+      prix: newVelo.prix,
+      disponible: newVelo.disponible,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+}
 
 // Get a product by its ID
 export async function getvelo(req, res) {
@@ -54,7 +77,7 @@ export async function getvelo(req, res) {
   try {
     const foundVelo = await Velo.findById(_id);
     if (!foundVelo)
-      res.status(400).send({ errors: [{ msg: "velo n'existe pas" }] });
+      res.status(404).send({ errors: [{ msg: "velo n'existe pas" }] });
     else res.status(200).send({ success: { msg: "velo trouvée", foundVelo } });
   } catch (error) {
     res.status(400).send({ errors: [{ msg: error.message }] });
@@ -79,10 +102,18 @@ export async function updatevelo(req, res) {
 // Get a list of all products
 export async function getvelos(req, res) {
   try {
-    const velos = await Velo.find();
-    res.status(200).json(velos);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    let docs = await Velo.find({});
+    let list = docs.map(doc => ({
+      id: doc._id,
+      type: doc.type,
+      image: doc.image,
+      description: doc.description,
+      disponible: doc.disponible
+
+    }));
+    res.status(200).json(list);
+  } catch (err) {
+    res.status(500).json({ error: err });
   }
 }
 

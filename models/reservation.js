@@ -11,7 +11,7 @@ const ReservationSchema = new Schema(
     },
     typePayment: {
       type: String,
-      enum: ['pay Later', 'Credit Card'],
+      enum: ['pay Later', 'Credit Card'], 
       required: true
     },
     
